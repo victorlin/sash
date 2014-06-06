@@ -32,10 +32,10 @@ function sash {
     return 1
   fi
 
-  local instance=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$host" "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[].[KeyName,PublicIpAddress,Tags[?Key==`Name`].Value]' --output text)
+  local instance=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$host" "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[].[KeyName,PrivateIpAddress,Tags[?Key==`Name`].Value]' --output text)
 
   if [[ -z $instance ]]; then
-    instance=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$host" "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[].[KeyName,PublicIpAddress,Tags[?Key==`Name`].Value]' --output text)
+    instance=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$host" "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[].[KeyName,PrivateIpAddress,Tags[?Key==`Name`].Value]' --output text)
     if [[ -z $instance ]]; then
       echo Could not find an instance named $host
       return 1
@@ -71,7 +71,7 @@ function sash {
     echo "(out of ${number_of_instances} instances)"
   fi
 
-  ssh -i ~/.aws/$pem.pem ubuntu@$ip
+  ssh -i ~/.ssh/id_rsa USERNAME@$ip
 }
 
 function clear_sash {
